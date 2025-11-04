@@ -53,7 +53,7 @@
       {{ range where $ctx.Site.Data.sponsors.groups "tag" $tag }}
       <div class="caption">
         <a href={{ .link }}>
-          <img src="{{ "/images/sponsors/{{ $tag }}.png" | absURL }}" loading="lazy" alt="{{ .name }}"
+          <img src={{ printf "images/sponsors/%s.png" $tag | absURL }} loading="lazy" alt="{{ .name }}"
             class="sponsor-logo">
         </a>
       </div>
@@ -131,11 +131,11 @@
     const bgValue = rootStyles.getPropertyValue(`--${color}-100`).trim();
     const colorValue = rootStyles.getPropertyValue(`--${color}-dark-100`).trim();
 
-    const base = "{{ " / " | absURL }}";
+    const baseURL = 'https://camnetnet.github.io/camnetnet';
 
     if (source != "none") {
       display.innerHTML = `<div id="main_image" class="event-thumbnail">
-    <img src="${base}images/events/${source}.png" loading="lazy" alt="${title}" class="member-image">
+    <img src="${baseURL}/images/events/${source}.png" loading="lazy" alt="${title}" class="member-image">
   </div>`;
 
 

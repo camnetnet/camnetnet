@@ -4,7 +4,7 @@ backend:
   branch: main
   login: true
   base_url: https://sveltia-cms-auth.joebacchusgeorge.workers.dev
-  site_domain: https://camnetnet.github.io/camnetnet
+  site_domain: https://camnetnet.github.io/camnetnet/
   commit_messages:
     create: Create {{collection}} “{{slug}}”
     update: Update {{collection}} “{{slug}}”
@@ -14,7 +14,7 @@ backend:
     openAuthoring: '{{message}}'
 
 logo:
-  src: /images/logos/light/icon_orange.svg
+  src: https://camnetnet.github.io/camnetnet/images/logos/light/icon_orange.svg
   show_in_header: true
 
 media_folder: "static/uploads"
