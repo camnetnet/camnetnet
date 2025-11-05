@@ -335,100 +335,92 @@ function renderGraph(char, colorName = "black", node_r = 5, edge_r = 5, size = 2
     return svg;
 }
 
-window.addEventListener("load", () => {
-    const glyphs = document.querySelectorAll("div.glyph");
+function addHoverEffect(svg, hoverStroke, hoverOpacity, originalStroke = null, originalOpacity = null, hoverNodeScale = 1.5, hoverStrokeScale = 1.5) {
+  const lines = svg.querySelectorAll("line, path, rect");
+  const nodes = svg.querySelectorAll("circle"); // assuming nodes are <circle>
 
-    function addHoverEffect(svg, hoverStroke, hoverOpacity, originalStroke = null, originalOpacity = null, hoverNodeScale = 1.5, hoverStrokeScale = 1.5) {
-        const lines = svg.querySelectorAll("line, path, rect");
-        const nodes = svg.querySelectorAll("circle"); // assuming nodes are <circle>
+  // Store original stroke colors, opacities, and widths
+  if (!originalStroke) {
+    originalStroke = Array.from(lines, el => el.getAttribute("stroke"));
+  }
 
-        // Store original stroke colors, opacities, and widths
-        if (!originalStroke) {
-            originalStroke = [];
-            lines.forEach(el => originalStroke.push(el.getAttribute("stroke")));
-        }
+  if (!originalOpacity) {
+    originalOpacity = Array.from(lines, el => el.getAttribute("stroke-opacity") ?? 1);
+  }
 
-        if (!originalOpacity) {
-            originalOpacity = [];
-            lines.forEach(el => {
-                const op = el.getAttribute("stroke-opacity");
-                originalOpacity.push(op !== null ? op : 1);
-            });
-        }
+  const originalStrokeWidth = Array.from(lines, el => parseFloat(el.getAttribute("stroke-width") || 1));
+  lines.forEach(el => {
+    el.style.transition = "stroke 0.3s ease, stroke-opacity 0.3s ease, stroke-width 0.3s ease";
+  });
 
-        const originalStrokeWidth = [];
-        lines.forEach(el => {
-            const w = parseFloat(el.getAttribute("stroke-width") || 1);
-            originalStrokeWidth.push(w);
-            el.style.transition = "stroke 0.3s ease, stroke-opacity 0.3s ease, stroke-width 0.3s ease";
-        });
+  const originalRadius = Array.from(nodes, n => parseFloat(n.getAttribute("r") || 1));
+  nodes.forEach(n => (n.style.transition = "r 0.3s ease"));
 
-        // Store original node radius
-        const originalRadius = [];
-        nodes.forEach(n => {
-            originalRadius.push(parseFloat(n.getAttribute("r") || 1));
-            n.style.transition = "r 0.3s ease";
-        });
+  svg.addEventListener("mouseenter", () => {
+    lines.forEach((el, i) => {
+      el.setAttribute("stroke", hoverStroke);
+      el.setAttribute("stroke-opacity", hoverOpacity);
+      el.setAttribute("stroke-width", originalStrokeWidth[i] * hoverStrokeScale);
+    });
+    nodes.forEach((n, i) => n.setAttribute("r", originalRadius[i] * hoverNodeScale));
+  });
 
-        svg.addEventListener("mouseenter", () => {
-            lines.forEach((el, i) => {
-                el.setAttribute("stroke", hoverStroke);
-                el.setAttribute("stroke-opacity", hoverOpacity);
-                el.setAttribute("stroke-width", originalStrokeWidth[i] * hoverStrokeScale);
-            });
-            nodes.forEach((n, i) => n.setAttribute("r", originalRadius[i] * hoverNodeScale));
-        });
+  svg.addEventListener("mouseleave", () => {
+    lines.forEach((el, i) => {
+      el.setAttribute("stroke", originalStroke[i]);
+      el.setAttribute("stroke-opacity", originalOpacity[i]);
+      el.setAttribute("stroke-width", originalStrokeWidth[i]);
+    });
+    nodes.forEach((n, i) => n.setAttribute("r", originalRadius[i]));
+  });
+}
 
-        svg.addEventListener("mouseleave", () => {
-            lines.forEach((el, i) => {
-                el.setAttribute("stroke", originalStroke[i]);
-                el.setAttribute("stroke-opacity", originalOpacity[i]);
-                el.setAttribute("stroke-width", originalStrokeWidth[i]);
-            });
-            nodes.forEach((n, i) => n.setAttribute("r", originalRadius[i]));
-        });
+function renderAllGlyphs(scope = document) {
+  const glyphs = scope.querySelectorAll("div.glyph");
+
+  glyphs.forEach(d => {
+    const char = d.getAttribute("data-char")?.trim().charAt(0) || "A";
+    const type = d.getAttribute("data-type") || "adj";
+    const color = d.getAttribute("data-color") || "black";
+    const bg = d.getAttribute("data-bg") || "grey";
+    const radius = parseFloat(d.getAttribute("data-radius")) || 1;
+    const node = parseInt(d.getAttribute("data-node")) || 3;
+    const edge = parseInt(d.getAttribute("data-edge")) || 6;
+
+    const baseSize = 10;
+    let svg;
+
+    if (type === "graph") {
+      svg = renderGraph(char, color, node, edge, baseSize * 20, bg);
+    } else {
+      svg = render(char, baseSize, radius, color, bg);
     }
 
-    glyphs.forEach(d => {
-        const char = d.textContent.trim().charAt(0) || "A";
-        const type = d.getAttribute("data-type") || "adj";
-        const color = d.getAttribute("data-color") || "black";
-        const bg = d.getAttribute("data-bg") || "grey";
-        const radius = parseFloat(d.getAttribute("data-radius")) || 1;
-        const node = parseInt(d.getAttribute("data-node")) || 3;
-        const edge = parseInt(d.getAttribute("data-edge")) || 6;
+    d.innerHTML = "";
+    d.appendChild(svg);
 
-        const baseSize = 10;
-        let svg;
-        if (type === "graph") {
-            svg = renderGraph(char, color, node, edge, baseSize * 20, bg);
-        } else {
-            svg = render(char, baseSize, radius, color, bg);
-        }
+    const svgRect = svg.getBBox();
+    svg.setAttribute("viewBox", `${svgRect.x} ${svgRect.y} ${svgRect.width} ${svgRect.height}`);
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    svg.style.width = "100%";
+    svg.style.height = "100%";
+    svg.style.display = "block";
 
-        d.innerHTML = "";
-        d.appendChild(svg);
+    // Hover configuration
+    let hoverStroke, hoverOpacity, hoverNodeScale = 1.5, hoverStrokeScale = 1.5;
+    if (type === "adj") {
+      hoverStroke = bg; // adj uses background color
+      hoverOpacity = 1;
+    } else {
+      hoverStroke = color;
+      hoverOpacity = 0.25;
+      hoverNodeScale = 1;
+      hoverStrokeScale = 1;
+    }
 
-        const svgRect = svg.getBBox();
-        svg.setAttribute("viewBox", `${svgRect.x} ${svgRect.y} ${svgRect.width} ${svgRect.height}`);
-        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-        
-        svg.style.width = "100%";
-        svg.style.height = "100%";
-        svg.style.display = "block";
+    addHoverEffect(svg, hoverStroke, hoverOpacity, null, null, hoverNodeScale, hoverStrokeScale);
+  });
+}
 
-        // Determine hover properties
-        let hoverStroke, hoverOpacity, hoverNodeScale = 1.5, hoverStrokeScale = 1.5;
-        if (type === "adj") {
-            hoverStroke = bg;       // adj uses background color
-            hoverOpacity = 1;
-        } else {
-            hoverStroke = color;
-            hoverOpacity = 0.25;
-            hoverNodeScale = 1;      // optional: no node size change for non-adj
-            hoverStrokeScale = 1;    // optional: no stroke width change for non-adj
-        }
-
-        addHoverEffect(svg, hoverStroke, hoverOpacity, null, null, hoverNodeScale, hoverStrokeScale);
-    });
-});
+// Run once when the page is fully loaded
+window.addEventListener("load", () => renderAllGlyphs());

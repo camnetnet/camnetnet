@@ -139,12 +139,14 @@
 
             
 
-            <a id="w-node-f41825b4-6da0-0e36-95fc-6e7a698f5ea2-fe3ea3f3" href=http://localhost:1313/camnetnet/events/demo_conference/?index&#61;37&amp;source&#61;none&amp;status&#61;ACTIVE class="event-people-wrapper w-inline-block">
+            <a id="w-node-f41825b4-6da0-0e36-95fc-6e7a698f5ea2-fe3ea3f3" href=http://localhost:1313/camnetnet/events/demo_conference/?index&#61;37&amp;source&#61;cambridge_again&amp;status&#61;ACTIVE class="event-people-wrapper w-inline-block">
               
 
                 
-                <div class="glyph event-thumbnail" style="background-color: #3656ad" data-type="adj"
-                  data-color="#8377d1" data-bg="#3656ad">Cambridge Networks Relaunch</div>
+                <div class="event-thumbnail">
+                  <img src=http://localhost:1313/camnetnet/images/events/cambridge_again.png loading="lazy" alt=""
+                    class="member-image">
+                </div>
                 
 
                 <div id="w-node-f41825b4-6da0-0e36-95fc-6e7a698f5ea4-fe3ea3f3" class="vertical-wrapper padded">
@@ -303,7 +305,15 @@
     crossorigin="anonymous"></script>
   <script src=http://localhost:1313/camnetnet/js/webflow.js type="text/javascript"></script>
   <script src=http://localhost:1313/camnetnet/js/alphabet_interactive.js></script>
-  <script src=http://localhost:1313/camnetnet/js/generate.js></script>
+  <script>
+    const baseURL = 'https://camnetnet.github.io/camnetnet/';
+    const isMobile = window.innerWidth <= 768;
+    if (!isMobile) {
+      const script = document.createElement('script');
+      script.src = `${baseURL}js/generate.js`;
+      document.body.appendChild(script);
+    }
+  </script>
   <script src=http://localhost:1313/camnetnet/js/load.js></script>
 
 </body>

@@ -122,7 +122,7 @@
     <div class="_2-grid">
 
       <div id="event-display">
-        <div id="main_glyph" class="glyph event-thumbnail big ger" data-type="adj">Cambridge Networks Day 2012</div>
+        <div id="main_glyph" class="glyph event-thumbnail big ger" data-type="adj" data-char="Cambridge Networks Day 2012"></div>
       </div>
 
       <div id="w-node-_7e404c44-e8f6-9782-33dc-87433961863a-a984b33e" class="vertical-wrapper tall event">
@@ -185,11 +185,11 @@
     const bgValue = rootStyles.getPropertyValue(`--${color}-100`).trim();
     const colorValue = rootStyles.getPropertyValue(`--${color}-dark-100`).trim();
 
-    const baseURL = 'https://camnetnet.github.io/camnetnet';
+    const baseURL = 'https://camnetnet.github.io/camnetnet/';
 
     if (source != "none") {
       display.innerHTML = `<div id="main_image" class="event-thumbnail">
-    <img src="${baseURL}/images/events/${source}.png" loading="lazy" alt="${title}" class="member-image">
+    <img src="${baseURL}images/events/${source}.png" loading="lazy" alt="${source}" class="member-image">
   </div>`;
 
 

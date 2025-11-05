@@ -12,6 +12,7 @@ sponsors:
   - cup
   - trinity
 cambridge: true
+image: cambridge_again
 ---
 
 ## About the event

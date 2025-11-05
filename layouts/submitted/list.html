@@ -107,7 +107,15 @@
         crossorigin="anonymous"></script>
     <script src={{ absURL "js/webflow.js" }} type="text/javascript"></script>
     <script src={{ absURL "js/alphabet.js" }}></script>
-    <script src={{ absURL "js/generate.js" }}></script>
+    <script>
+        const baseURL = 'https://camnetnet.github.io/camnetnet/';
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile) {
+            const script = document.createElement('script');
+            script.src = `${baseURL}js/generate.js`;
+            document.body.appendChild(script);
+        }
+    </script>
     <script src={{ absURL "js/load.js" }}></script>
 
 </body>

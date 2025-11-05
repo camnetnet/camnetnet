@@ -117,8 +117,7 @@
                 </div>
                 {{ else }}
                 <div class="glyph event-thumbnail" style="background-color: {{ $bgColor }}" data-type="{{ $dataType }}"
-                  data-color="{{ $mainColor }}" data-bg="{{ $bgColor }}">
-                  {{ $item.Title }}
+                  data-color="{{ $mainColor }}" data-bg="{{ $bgColor }}" data-char="{{ $item.Title }}">
                 </div>
                 {{ end }}
 
@@ -162,7 +161,7 @@
 
           </div>
 
-          <div data-delay="4000" data-animation="slide" class="past-event-slider w-slider" data-autoplay="false"
+          {{/* <div data-delay="4000" data-animation="slide" class="past-event-slider w-slider" data-autoplay="false"
             data-easing="ease" data-hide-arrows="true" data-disable-swipe="false" data-autoplay-limit="0"
             data-nav-spacing="3" data-duration="400" data-infinite="false">
             <div class="past-events-mask _2 w-slider-mask">
@@ -183,8 +182,21 @@
             <div class="right-arrow w-slider-arrow-right" style="">
               <img src={{ absURL "images/←-1.svg" }} loading="lazy" alt="" class="arrow">
             </div>
+            */}}
 
-
+            <div id="event-list" class="_4-grid">
+              {{ $events := .Site.GetPage "section" "events" }}
+              {{ $numEvents := len $events.Pages }}
+              {{ range $index, $item := $events.Pages }}
+              {{ if not (isset $item.Params "pin") }}
+              {{ $colors := partial "colors" }}
+              {{ $color := index $colors (mod (sub $numEvents $index ) (len $colors)) }}
+              <div class="event-card">
+                {{ partial "event-card.html" (dict "item" $item "index" $index "color" $color) }}
+              </div>
+              {{ end }}
+              {{ end }}
+            </div>
 
             {{/* <div class="_4-grid even">
 
@@ -221,6 +233,10 @@
 
 
           </div>
+          <div id="event-pagination" class="pagination-container"></div>
+          <div id="no-events" class="caption" style="display:none; text-align:center; padding: 40px">
+            No events found
+          </div>
         </div>
       </section>
       {{ partial "footer.html" . }}
@@ -232,7 +248,127 @@
   <script src={{ absURL "js/webflow.js" }} type="text/javascript"></script>
   <script src={{ absURL "js/alphabet_interactive.js" }}></script>
   <script src={{ absURL "js/load.js" }}></script>
+  <script type="text/javascript" src={{ absURL "js/pagination.js" }}></script>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const $list = $('#event-list'); // Container for event cards
+      const $items = $list.children('.event-people-wrapper, .event-card'); // Each event item
+      const $pagination = $('<div id="pagination-container" class="pagination-container"></div>');
+      const $noResults = $('<div id="no-events" class="caption" style="display:none; text-align:center; padding:40px;">No events found</div>');
+      $list.after($pagination);
+      $pagination.after($noResults);
+
+      // Cache all event items
+      const eventData = $items.map(function () {
+        const $el = $(this);
+        return { el: $el, visible: true };
+      }).get();
+
+      // Items per page based on screen width
+      function getItemsPerPage() {
+        const width = $(window).width();
+        if (width >= 1200) return 4;
+        if (width >= 768) return 2;
+        return 1;
+      }
+
+      // Remove existing filler cards
+      function clearFillers() {
+        $list.children('.event-card.filler').remove();
+      }
+
+      // Add filler cards to complete the current page
+      function addFillers(itemsOnPage, itemsOnCurrentPage) {
+        const remainder = itemsOnCurrentPage % itemsOnPage;
+        if (remainder === 0) return;
+
+        const fillersNeeded = itemsOnPage - remainder;
+        for (let i = 0; i < fillersNeeded; i++) {
+          const filler = $(`
+      <div class="event-card filler">
+        <div class="w-slide">
+          <a class="event-people-wrapper past w-inline-block" style="background-color:var(--grey-000);">
+            <div class="glyph event-thumbnail" 
+                 style="background-color: var(--grey-000);" 
+                 data-type="graph" 
+                 data-color=transparent
+                 data-bg=var(--grey-000)
+                 data-char="Filler">
+            </div> 
+            <div class="vertical-wrapper padded" style="background-color:var(--grey-000);">
+              
+            </div>
+          </a>
+        </div>
+      </div>
+    `);
+
+          $list.append(filler);
+        }
+      }
+
+      // Render visible items for a page
+      function renderPage(page, itemsPerPage) {
+        clearFillers();
+        const visibleItems = eventData.filter(item => item.visible);
+        const start = (page - 1) * itemsPerPage;
+        const end = page * itemsPerPage;
+        const itemsOnCurrentPage = visibleItems.slice(start, end);
+
+        // Hide all first
+        eventData.forEach(item => item.el.hide());
+
+        // Show only current page items
+        itemsOnCurrentPage.forEach(item => item.el.show());
+
+        // Add fillers if needed
+        addFillers(itemsPerPage, itemsOnCurrentPage.length);
+
+        // Render glyphs if necessary
+        if (typeof renderAllGlyphs === 'function') {
+          renderAllGlyphs($list[0]);
+        }
+      }
+
+      // Setup pagination
+      function setupPagination() {
+        const itemsPerPage = getItemsPerPage();
+        const visibleItems = eventData.filter(item => item.visible);
+        const total = visibleItems.length;
+
+        if (total === 0) {
+          $pagination.hide();
+          $noResults.show();
+          return;
+        }
+
+        $noResults.hide();
+        $pagination.show();
+
+        $pagination.pagination('destroy');
+        $pagination.pagination({
+          items: total,
+          edges: 1,
+          ellipsePageSet: false,
+          itemsOnPage: itemsPerPage,
+          cssStyle: 'light-theme',
+          displayedPages: 1,
+          prevText: "←",
+          nextText: "→",
+          onPageClick: function (page) {
+            renderPage(page, itemsPerPage);
+          }
+        });
+
+        renderPage(1, itemsPerPage);
+      }
+
+      // Initialize
+      setupPagination();
+      $(window).on('resize', () => setupPagination());
+    });
+  </script>
 </body>
 
 </html>

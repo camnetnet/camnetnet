@@ -17,6 +17,7 @@ date: 2025-11-30
 time:
   - 17:00
   - 18:00
+image: cambridge_again
 ---
 Combinatorial optimization problems remain ubiquitous in industry and science. Recently, deep
 learning approaches have been motivated as heuristics for such problems. Although promising results

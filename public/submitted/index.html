@@ -146,7 +146,15 @@
         crossorigin="anonymous"></script>
     <script src=http://localhost:1313/camnetnet/js/webflow.js type="text/javascript"></script>
     <script src=http://localhost:1313/camnetnet/js/alphabet.js></script>
-    <script src=http://localhost:1313/camnetnet/js/generate.js></script>
+    <script>
+        const baseURL = 'https://camnetnet.github.io/camnetnet/';
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile) {
+            const script = document.createElement('script');
+            script.src = `${baseURL}js/generate.js`;
+            document.body.appendChild(script);
+        }
+    </script>
     <script src=http://localhost:1313/camnetnet/js/load.js></script>
 
 </body>

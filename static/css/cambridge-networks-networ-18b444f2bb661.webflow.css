@@ -1138,8 +1138,8 @@ blockquote {
 }
 
 ._4-grid {
-  padding: 20px;
-  grid-column-gap: 20px;
+  /* padding: 20px; */
+  grid-column-gap: 10px;
   grid-row-gap: 10px;
   /* grid-template-rows: auto; */
   grid-template-columns: 1fr 1fr 1fr 1fr;
