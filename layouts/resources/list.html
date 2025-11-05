@@ -85,8 +85,9 @@
         <div class="container">
           {{/* <h1 class="h4">Resources</h1> */}}
           <div class="w-form">
-            <form id="email-form" name="email-form" data-name="Email Form" method="get" class="_4-grid" onsubmit="return false;"
-              data-wf-page-id="68dd9ee202318045e1ee0168" data-wf-element-id="5f75e165-7088-e008-8d86-785d9e4a16cd">
+            <form id="email-form" name="email-form" data-name="Email Form" method="get" class="_4-grid"
+              onsubmit="return false;" data-wf-page-id="68dd9ee202318045e1ee0168"
+              data-wf-element-id="5f75e165-7088-e008-8d86-785d9e4a16cd">
               <div id="w-node-_5f75e165-7088-e008-8d86-785d9e4a16e7-e1ee0168" class="horizontal-wrapper filters">
                 <div class="caption">FILTER:</div><label class="w-checkbox radio-checkbox-wrapper filter">
                   <div class="w-checkbox-input w-checkbox-input--inputType-custom checkbox filter orange"></div><input
@@ -192,7 +193,117 @@
   <script src={{ absURL "js/webflow.js" }} type="text/javascript"></script>
   <script src={{ absURL "js/alphabet.js" }}></script>
   <script src={{ absURL "js/load.js" }}></script>
+    <script type="text/javascript" src={{ absURL "js/pagination.js" }}></script>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const $list = $('#shuffle-list');
+      const $items = $list.children('.resource-wrapper');
+      const $search = $('#Search');
+      const $checkboxes = $('.filter input[type="checkbox"]');
+      const $noResults = $('#no-results');
+      const $pagination = $('<div id="pagination-container" class="pagination-container"></div>');
+      $list.after($pagination);
+
+      // Precompute text and tags for performance
+      const resourcesData = $items.map(function () {
+        const $el = $(this);
+        return {
+          el: $el,
+          title: $el.find('h2').text().toLowerCase(),
+          desc: $el.find('p').text().toLowerCase(),
+          tag: $el.find('.caption').text().toLowerCase(),
+          visible: true
+        };
+      }).get();
+
+      // Debounce utility
+      function debounce(func, wait) {
+        let timeout;
+        return function () {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, arguments), wait);
+        };
+      }
+
+      // Items per page based on screen width
+      function getItemsPerPage() {
+        const width = $(window).width();
+        if (width >= 1200) return 6;
+        if (width >= 768) return 4;
+        return 2;
+      }
+
+      // Filter resources
+      function filterResources() {
+        const searchTerm = $search.val().toLowerCase().trim();
+        const activeFilters = $checkboxes.filter(':checked')
+          .map((_, cb) => $(cb).next('span').text().toLowerCase())
+          .get();
+
+        let anyVisible = false;
+
+        resourcesData.forEach(item => {
+          const matchesSearch = item.title.includes(searchTerm) || item.desc.includes(searchTerm);
+          const matchesFilter = activeFilters.length === 0 || activeFilters.includes(item.tag);
+          item.visible = matchesSearch && matchesFilter;
+          if (item.visible) anyVisible = true;
+        });
+
+        $noResults.toggle(!anyVisible);
+        setupPagination();
+      }
+
+      // Render page
+      function renderPage(page, itemsPerPage) {
+        const visibleItems = resourcesData.filter(item => item.visible);
+        visibleItems.forEach((item, idx) => {
+          item.el.toggle(idx >= (page - 1) * itemsPerPage && idx < page * itemsPerPage);
+        });
+      }
+
+      // Setup pagination
+      function setupPagination() {
+        const itemsPerPage = getItemsPerPage();
+        const visibleItems = resourcesData.filter(item => item.visible);
+        const total = visibleItems.length;
+
+        if (total === 0) {
+          $pagination.hide();
+          return;
+        }
+
+        $pagination.show();
+
+        const totalPages = Math.ceil(total / itemsPerPage);
+
+        $pagination.pagination('destroy');
+        $pagination.pagination({
+          items: total,
+          edges: 1,
+          ellipsePageSet: false,
+          itemsOnPage: itemsPerPage,
+          cssStyle: 'light-theme',
+          displayedPages: 1,
+          prevText: "←",
+          nextText: "→",
+          onPageClick: function (page) {
+            renderPage(page, itemsPerPage);
+          }
+        });
+
+        renderPage(1, itemsPerPage);
+      }
+
+      // Initialize
+      filterResources();
+
+      // Event listeners
+      $search.on('input', debounce(filterResources, 200));
+      $checkboxes.on('change', debounce(filterResources, 200));
+      $(window).on('resize', debounce(setupPagination, 200));
+    });
+  </script>
 </body>
 
 </html>
