@@ -335,41 +335,80 @@ function renderGraph(char, colorName = "black", node_r = 5, edge_r = 5, size = 2
     return svg;
 }
 
-window.addEventListener("load", () => {
-    const glyphs = document.querySelectorAll("div.glyph");
+// window.addEventListener("load", () => {
+//     const glyphs = document.querySelectorAll("div.glyph");
 
-    glyphs.forEach(d => {
-        const char = d.textContent.trim().charAt(0) || "A";
-        const type = d.getAttribute("data-type") || "adj"; // default to matrix/adj
-        const color = d.getAttribute("data-color") || "black";
-        const bg = d.getAttribute("data-bg") || "grey";
-        const radius = parseFloat(d.getAttribute("data-radius")) || 1;
-        const node = parseInt(d.getAttribute("data-node")) || 3;
-        const edge = parseInt(d.getAttribute("data-edge")) || 6;
+//     glyphs.forEach(d => {
+//         const char = d.textContent.trim().charAt(0) || "A";
+//         const type = d.getAttribute("data-type") || "adj"; // default to matrix/adj
+//         const color = d.getAttribute("data-color") || "black";
+//         const bg = d.getAttribute("data-bg") || "grey";
+//         const radius = parseFloat(d.getAttribute("data-radius")) || 1;
+//         const node = parseInt(d.getAttribute("data-node")) || 3;
+//         const edge = parseInt(d.getAttribute("data-edge")) || 6;
 
-        // Render at a base resolution
-        const baseSize = 10;
-        let svg;
-        if (type === "graph") {
-            svg = renderGraph(char, color, node, edge, baseSize * 20, bg);
-        } else {
-            svg = render(char, baseSize, radius, color, bg);
-        }
+//         // Render at a base resolution
+//         const baseSize = 10;
+//         let svg;
+//         if (type === "graph") {
+//             svg = renderGraph(char, color, node, edge, baseSize * 20, bg);
+//         } else {
+//             svg = render(char, baseSize, radius, color, bg);
+//         }
 
-        // Append temporarily to measure
-        d.innerHTML = "";
-        d.appendChild(svg);
+//         // Append temporarily to measure
+//         d.innerHTML = "";
+//         d.appendChild(svg);
 
-        // Fit to parent div size
-        const parentRect = d.getBoundingClientRect();
-        const svgRect = svg.getBBox();
+//         // Fit to parent div size
+//         const parentRect = d.getBoundingClientRect();
+//         const svgRect = svg.getBBox();
 
-        svg.setAttribute("viewBox", `${svgRect.x} ${svgRect.y} ${svgRect.width} ${svgRect.height}`);
-        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-        svg.style.width = "100%";
-        svg.style.height = "100%";
-        svg.style.display = "block";
+//         svg.setAttribute("viewBox", `${svgRect.x} ${svgRect.y} ${svgRect.width} ${svgRect.height}`);
+//         svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+//         svg.style.width = "100%";
+//         svg.style.height = "100%";
+//         svg.style.display = "block";
 
    
-    });
-});
+//     });
+// });
+
+function renderAllGlyphs(scope = document) {
+  const glyphs = scope.querySelectorAll("div.glyph");
+
+  glyphs.forEach(d => {
+    const char = d.getAttribute("data-char")?.trim().charAt(0) || "A";
+    const type = d.getAttribute("data-type") || "adj";
+    const color = d.getAttribute("data-color") || "black";
+    const bg = d.getAttribute("data-bg") || "grey";
+    const radius = parseFloat(d.getAttribute("data-radius")) || 1;
+    const node = parseInt(d.getAttribute("data-node")) || 3;
+    const edge = parseInt(d.getAttribute("data-edge")) || 6;
+
+    const baseSize = 10;
+    let svg;
+
+    if (type === "graph") {
+      svg = renderGraph(char, color, node, edge, baseSize * 20, bg);
+    } else {
+      svg = render(char, baseSize, radius, color, bg);
+    }
+
+    d.innerHTML = "";
+    d.appendChild(svg);
+
+    const svgRect = svg.getBBox();
+    svg.setAttribute("viewBox", `${svgRect.x} ${svgRect.y} ${svgRect.width} ${svgRect.height}`);
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    svg.style.width = "100%";
+    svg.style.height = "100%";
+    svg.style.display = "block";
+
+    // Mark as rendered so we don’t double-render
+    // d.dataset.rendered = "true";
+  });
+}
+
+// Run once when the page is fully loaded
+window.addEventListener("load", () => renderAllGlyphs());
