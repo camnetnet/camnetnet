@@ -168,7 +168,7 @@
       <div class="vertical-wrapper short">
         {{ $member_full := printf "%s %s %s" $person.honorific $person.first_name $person.last_name }}
         <h2 class="h6">{{ $member_full }}</h2>
-        <p>{{ partial "stacker.html" $person.affiliation }}</p>
+        {{ partial "stacker.html" $person.affiliation }}
       </div>
 
       <div class="horizontal-wrapper tight er">

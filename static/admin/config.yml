@@ -80,28 +80,6 @@ collections:
             multiple: false
             allow_types: ["image/png"]
 
-  # - name: "external"
-  #   label: "External"
-  #   folder: "content/events"
-  #   create: true
-  #   slug: "{{year}}-{{month}}-{{day}}:External:{{slug}}"
-  #   fields:
-  #     - { label: "Important", name: "important", widget: "hidden", default: false }
-  #     - { label: "Draft", name: "draft", widget: "boolean", default: false }
-  #     - { label: "Pin", name: "pin", widget: "boolean", default: false }
-  #     - { label: "Cambridge", name: "cambridge", widget: "boolean", default: false }
-  #     - { label: "Direct link", name: "direct_link", widget: "string", required: true }
-  #     - { label: "Title", name: "title", widget: "string" }
-  #     - label: "Custom image"
-  #       name: "image"
-  #       widget: "file"
-  #       multiple: false
-  #       media_library:
-  #         config:
-  #           multiple: false
-  #           allow_types: ["image/png"]
-  #       required: false
-
   - name: "seminar"
     label: "Seminars"
     folder: "content/events"
@@ -115,27 +93,26 @@ collections:
       - { label: "More link", name: "more_link", widget: "string", required: false }
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Abstract", name: "body", widget: "markdown", modes: ["raw"]}
-      - {
-          label: "Speaker",
-          name: "speaker",
-          widget: "object",
-          fields:
-            [
-              {
-                label: "Honorific",
-                name: "honorific",
-                widget: "select",
-                options: [" ", "Dr.", "Prof."],
-              },
-              { label: "First Name(s)", name: "first_name", widget: "string" },
-              { label: "Last Name(s)", name: "last_name", widget: "string" },
-              {
-                label: "Main affiliation",
-                name: "affiliation",
-                widget: "list",
-              },
-            ],
-        }
+      - label: "Speaker"
+        name: "speaker"
+        widget: "object"
+        fields:
+          - label: "Honorific"
+            name: "honorific"
+            widget: "select"
+            options:
+              - { label: "None", value: "" }
+              - { label: "Dr.", value: "Dr." }
+              - { label: "Prof.", value: "Prof." }
+          - label: "First Name(s)"
+            name: "first_name"
+            widget: "string"
+          - label: "Last Name(s)"
+            name: "last_name"
+            widget: "string"
+          - label: "Main affiliation"
+            name: "affiliation"
+            widget: "list"
       - {
           label: "Date",
           name: "date",
@@ -234,12 +211,13 @@ collections:
         widget: "list"
         required: false
         fields:
-          - {
-              label: "Honorific",
-              name: "honorific",
-              widget: "select",
-              options: [" ", "Dr.", "Prof."],
-            }
+          - label: "Honorific"
+            name: "honorific"
+            widget: "select"
+            options:
+              - { label: "None", value: "" }
+              - { label: "Dr.", value: "Dr." }
+              - { label: "Prof.", value: "Prof." }
           - { label: "First Name(s)", name: "first_name", widget: "string" }
           - { label: "Last Name(s)", name: "last_name", widget: "string" }
           - { label: "Main affiliation", name: "affiliation", widget: "list" }
@@ -272,6 +250,28 @@ collections:
             allow_types: ["image/png"]
         required: false
 
+  # - name: "external"
+  #   label: "External"
+  #   folder: "content/events"
+  #   create: true
+  #   slug: "{{year}}-{{month}}-{{day}}:External:{{slug}}"
+  #   fields:
+  #     - { label: "Important", name: "important", widget: "hidden", default: false }
+  #     - { label: "Draft", name: "draft", widget: "boolean", default: false }
+  #     - { label: "Pin", name: "pin", widget: "boolean", default: false }
+  #     - { label: "Cambridge", name: "cambridge", widget: "boolean", default: false }
+  #     - { label: "Direct link", name: "direct_link", widget: "string", required: true }
+  #     - { label: "Title", name: "title", widget: "string" }
+  #     - label: "Custom image"
+  #       name: "image"
+  #       widget: "file"
+  #       multiple: false
+  #       media_library:
+  #         config:
+  #           multiple: false
+  #           allow_types: ["image/png"]
+  #       required: false
+  
   - name: "members"
     label: "Members"
     folder: "data/members"
@@ -279,12 +279,13 @@ collections:
     create: true
     slug: "{{fields.first_name}}-{{fields.last_name}}"
     fields:
-      - {
-          label: "Honorific",
-          name: "honorific",
-          widget: "select",
-          options: [" ", "Dr.", "Prof."],
-        }
+      - label: "Honorific"
+        name: "honorific"
+        widget: "select"
+        options:
+          - { label: "None", value: "" }
+          - { label: "Dr.", value: "Dr." }
+          - { label: "Prof.", value: "Prof." }
       - { label: "First Name(s)", name: "first_name", widget: "string" }
       - { label: "Last Name(s)", name: "last_name", widget: "string" }
       - { label: "Main affiliation", name: "affiliation", widget: "list" }

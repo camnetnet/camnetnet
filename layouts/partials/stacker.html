@@ -3,10 +3,10 @@
   {{ if $aff }}
     {{ if reflect.IsSlice $aff }}
       {{ range $aff }}
-        <div>{{ . }}</div>
+        <p>{{ . }}</p>
       {{ end }}
     {{ else }}
-      <div>{{ $aff }}</div>
+      <p>{{ $aff }}</p>
     {{ end }}
   {{ end }}
 </div>
