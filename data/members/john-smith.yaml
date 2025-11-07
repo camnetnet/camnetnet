@@ -1,0 +1,10 @@
+honorific: Dr.
+first_name: John
+last_name: Smith
+affiliation:
+  - University of Cambridge
+email: john-smith@cam.ac.uk
+tags:
+  - Statistical Physics
+  - Neural Networks
+  - Machine Learning
